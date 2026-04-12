@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>饮酒监控器</title>
+  <style>
+    :root {
+      --bg: #f3ede2;
+      --bg-deep: #d8c6ab;
+      --paper: rgba(252, 249, 242, 0.86);
+      --paper-strong: rgba(255, 252, 247, 0.96);
+      --line: rgba(83, 58, 31, 0.12);
+      --text: #271a12;
+      --muted: #6e5d4f;
+      --soft: #9c8a7c;
+      --accent: #7f4f24;
+      --accent-2: #a06a34;
+      --olive: #667a63;
+      --warn: #d19944;
+      --danger: #bf5a43;
+      --shadow: 0 28px 70px rgba(72, 45, 24, 0.12);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Avenir Next", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(160, 106, 52, 0.18), transparent 28%),
+        radial-gradient(circle at 90% 10%, rgba(102, 122, 99, 0.18), transparent 24%),
+        linear-gradient(180deg, #f8f4ed 0%, #efe5d6 54%, #eadbc7 100%);
+      padding: 24px 18px 40px;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(rgba(127, 79, 36, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(127, 79, 36, 0.025) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.45), transparent 82%);
+    }
+
+    .container {
+      max-width: 1260px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .summary-card,
+    .form-card,
+    .history-card {
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.28)),
+        var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .summary-card::before,
+    .form-card::before,
+    .history-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(140deg, rgba(160, 106, 52, 0.08), transparent 38%);
+      pointer-events: none;
+    }
+
+    .eyebrow,
+    .section-kicker {
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      font-size: 0.72rem;
+      color: var(--accent-2);
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: "Iowan Old Style", "Palatino Linotype", "Songti SC", serif;
+      letter-spacing: -0.03em;
+    }
+
+    .top-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(340px, 0.8fr);
+      gap: 20px;
+      align-items: start;
+      margin-bottom: 20px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .summary-card {
+      padding: 24px;
+    }
+
+    .section-head {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 18px;
+    }
+
+    .section-head h2,
+    .section-head h3 {
+      margin-top: 8px;
+    }
+
+    .section-head h2 {
+      font-size: 1.75rem;
+    }
+
+    .section-head h3 {
+      font-size: 1.45rem;
+    }
+
+    .stats-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stat-item {
+      min-height: 110px;
+      padding: 18px;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(83, 58, 31, 0.08);
+      background: rgba(255, 255, 255, 0.54);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .stat-value {
+      display: block;
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-weight: 700;
+      line-height: 1;
+      color: var(--accent);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .progress-section {
+      position: relative;
+      z-index: 1;
+      margin-top: 18px;
+    }
+
+    .progress-header,
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .progress-header {
+      margin-bottom: 10px;
+      font-size: 0.92rem;
+    }
+
+    .progress-header span:first-child {
+      color: var(--muted);
+    }
+
+    .progress-bar {
+      height: 14px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(127, 79, 36, 0.09);
+      border: 1px solid rgba(127, 79, 36, 0.08);
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #70886b 0%, #b8854b 100%);
+      box-shadow: 0 0 18px rgba(160, 106, 52, 0.22);
+      transition: width 0.3s ease, background 0.3s ease;
+    }
+
+    .progress-fill.warning {
+      background: linear-gradient(90deg, #d19944 0%, #e1b36c 100%);
+    }
+
+    .progress-fill.danger {
+      background: linear-gradient(90deg, #bf5a43 0%, #d98462 100%);
+    }
+
+    .progress-labels {
+      margin-top: 9px;
+      font-size: 0.72rem;
+      color: var(--soft);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .warning {
+      position: relative;
+      z-index: 1;
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      font-size: 0.88rem;
+    }
+
+    .warning.normal {
+      background: rgba(102, 122, 99, 0.12);
+      border-color: rgba(102, 122, 99, 0.18);
+      color: #435441;
+    }
+
+    .warning.caution {
+      background: rgba(209, 153, 68, 0.13);
+      border-color: rgba(209, 153, 68, 0.18);
+      color: #8f5f1d;
+    }
+
+    .warning.danger {
+      background: rgba(191, 90, 67, 0.12);
+      border-color: rgba(191, 90, 67, 0.18);
+      color: #953c29;
+    }
+
+    .form-card {
+      padding: 24px;
+      position: sticky;
+      top: 18px;
+    }
+
+    .quick-tip {
+      position: relative;
+      z-index: 1;
+      margin-top: -4px;
+      margin-bottom: 16px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.92rem;
+    }
+
+    #drinkForm {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      height: 50px;
+      padding: 0 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(83, 58, 31, 0.12);
+      background: rgba(255, 255, 255, 0.66);
+      color: var(--text);
+      font-size: 1rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      appearance: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: rgba(160, 106, 52, 0.36);
+      box-shadow: 0 0 0 4px rgba(160, 106, 52, 0.1);
+    }
+
+    .form-group input::placeholder {
+      color: #aa998a;
+    }
+
+    .volume-row {
+      display: grid;
+      grid-template-columns: 1.35fr 0.85fr;
+      gap: 10px;
+    }
+
+    .btn-submit {
+      margin-top: 4px;
+      height: 54px;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #8e582a 0%, #bc8a52 100%);
+      color: #fff9f0;
+      font-size: 0.96rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 18px 28px rgba(127, 79, 36, 0.22);
+      transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.02);
+      box-shadow: 0 22px 34px rgba(127, 79, 36, 0.26);
+    }
+
+    .history-card {
+      padding: 24px;
+    }
+
+    .history-headline {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 18px;
+      margin-bottom: 16px;
+    }
+
+    .history-summary {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.7;
+      max-width: 560px;
+    }
+
+    .history-list {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      max-height: 420px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(83, 58, 31, 0.08);
+      background: rgba(255, 255, 255, 0.56);
+    }
+
+    .history-info {
+      min-width: 0;
+      display: grid;
+      gap: 4px;
+    }
+
+    .history-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .history-brand {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .history-details {
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.5;
+    }
+
+    .history-date {
+      color: var(--accent-2);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .btn-delete {
+      min-width: 72px;
+      height: 36px;
+      padding: 0 14px;
+      border: 1px solid rgba(191, 90, 67, 0.18);
+      border-radius: 999px;
+      background: rgba(191, 90, 67, 0.08);
+      color: var(--danger);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .btn-delete:hover {
+      transform: translateY(-1px);
+      background: rgba(191, 90, 67, 0.14);
+    }
+
+    .btn-repeat {
+      min-width: 108px;
+      height: 36px;
+      padding: 0 14px;
+      border: 1px solid rgba(127, 79, 36, 0.16);
+      border-radius: 999px;
+      background: rgba(127, 79, 36, 0.08);
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .btn-repeat:hover {
+      transform: translateY(-1px);
+      background: rgba(127, 79, 36, 0.14);
+    }
+
+    .empty-message {
+      display: grid;
+      place-items: center;
+      min-height: 180px;
+      border: 1px dashed rgba(83, 58, 31, 0.14);
+      border-radius: 18px;
+      color: var(--soft);
+      text-align: center;
+      padding: 24px;
+      grid-column: 1 / -1;
+    }
+
+    .note-strip {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.7;
+      position: relative;
+      z-index: 1;
+    }
+
+    code {
+      padding: 0.1em 0.45em;
+      border-radius: 999px;
+      background: rgba(127, 79, 36, 0.08);
+      color: var(--accent);
+      font-family: "SFMono-Regular", "Menlo", monospace;
+      font-size: 0.92em;
+    }
+
+    @media (max-width: 1024px) {
+      .top-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .form-card {
+        position: static;
+      }
+
+      .history-list {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 16px 12px 28px;
+      }
+
+      .summary-card,
+      .form-card,
+      .history-card {
+        padding: 20px;
+        border-radius: 22px;
+      }
+
+      .summary-grid,
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .volume-row {
+        grid-template-columns: 1fr;
+      }
+
+      .history-headline,
+      .history-item,
+      .history-actions {
+        flex-direction: column;
+        align-items: start;
+      }
+
+      .btn-delete,
+      .btn-repeat {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="top-layout">
+      <div class="summary-grid">
+        <section class="summary-card">
+          <div class="section-head">
+            <p class="section-kicker">Weekly Focus</p>
+            <h2>本周统计</h2>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-value" id="pureAlcohol">0</span>
+              <span class="stat-label">纯酒精 (ml)</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="alcoholUnits">0</span>
+              <span class="stat-label">酒精单位</span>
+            </div>
+          </div>
+          <div class="progress-section">
+            <div class="progress-header">
+              <span>本周进度</span>
+              <span id="progressText">0 / 14 单位</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-labels">
+              <span>0</span>
+              <span>14 单位</span>
+            </div>
+          </div>
+          <div class="warning" id="warning" style="display:none;">
+            <span>⚠️</span>
+            <span id="warningText"></span>
+          </div>
+        </section>
+
+        <section class="summary-card">
+          <div class="section-head">
+            <p class="section-kicker">Daily Check</p>
+            <h2>今日统计</h2>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-value" id="dailyPureAlcohol">0</span>
+              <span class="stat-label">纯酒精 (ml)</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="dailyUnits">0</span>
+              <span class="stat-label">酒精单位</span>
+            </div>
+          </div>
+          <div class="progress-section">
+            <div class="progress-header">
+              <span>今日进度</span>
+              <span id="dailyProgressText">0 / 4.5 单位</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="dailyProgressFill"></div>
+            </div>
+            <div class="progress-labels">
+              <span>0</span>
+              <span>4.5 单位</span>
+            </div>
+          </div>
+          <div class="warning" id="dailyWarning" style="display:none;">
+            <span>⚠️</span>
+            <span id="dailyWarningText"></span>
+          </div>
+        </section>
+      </div>
+
+      <aside class="form-card">
+        <div class="section-head">
+          <p class="section-kicker">Quick Entry</p>
+          <h2>快速添加记录</h2>
+        </div>
+        <p class="quick-tip">把录入区固定到电脑端右侧，打开页面就能直接记。你主要会看的“周/日进度”和“新记录输入”都在首屏。</p>
+        <form id="drinkForm">
+          <div class="form-group">
+            <label for="brandSelect">品牌</label>
+            <input type="text" id="brandSelect" list="brandList" placeholder="选择或输入品牌">
+            <datalist id="brandList"></datalist>
+          </div>
+          <div class="form-group">
+            <label for="alcohol">酒精度 (%)</label>
+            <input type="number" id="alcohol" min="0" max="100" step="0.1" placeholder="例如 4.5 / 40 / 53" required>
+          </div>
+          <div class="form-group">
+            <label for="volume">饮酒量</label>
+            <div class="volume-row">
+              <input type="number" id="volume" min="0" step="0.01" placeholder="例如 330 / 30 / 150" required>
+              <select id="volumeUnit">
+                <option value="ml" selected>毫升 (ml)</option>
+                <option value="oz">盎司 (oz)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="drinkDate">日期</label>
+            <input type="date" id="drinkDate" required>
+          </div>
+          <button type="submit" class="btn-submit">保存本条记录</button>
+        </form>
+      </aside>
+    </section>
+
+    <section class="history-card">
+      <div class="history-headline">
+        <div class="section-head">
+          <p class="section-kicker">Archive</p>
+          <h2>历史记录</h2>
+        </div>
+        <p class="history-summary">历史记录保留，但不再霸占页面主体。这里只做回看和删除，真正高频的监控与录入已经前置到上面。</p>
+      </div>
+      <div id="historyList" class="history-list">
+        <p class="empty-message">暂无记录</p>
+      </div>
+      <p class="note-strip">这个页面仍然是单文件版本，双击即可打开；数据保存在本浏览器本地存储里。</p>
+    </section>
+  </div>
+
+  <script>
+    const WEEKLY_LIMIT = 14;
+    const DAILY_LIMIT = 4.5;
+    const ML_PER_OZ = 29.5735;
+    const STORAGE_KEY_DRINKS = "alcohol_monitor_drinks_v2";
+    const STORAGE_KEY_BRANDS = "alcohol_monitor_brands_v2";
+    const SEEDED_BRANDS = [
+      "茅台", "五粮液", "青岛啤酒", "雪花啤酒", "1664", "山崎12", "響", "Malibu", "朝日",
+      "燕京纯生", "三得利金标啤酒", "Stella", "伏特加", "Gin", "鸡尾酒", "IPA", "巧克力世涛",
+      "德式小麦", "古斯海盐", "燕京U8", "燕京白啤"
+    ];
+    const SEEDED_RECORDS = [];
+
+    const form = document.getElementById("drinkForm");
+    const brandInput = document.getElementById("brandSelect");
+    const brandList = document.getElementById("brandList");
+    const alcoholInput = document.getElementById("alcohol");
+    const volumeInput = document.getElementById("volume");
+    const volumeUnit = document.getElementById("volumeUnit");
+    const dateInput = document.getElementById("drinkDate");
+    const pureAlcoholEl = document.getElementById("pureAlcohol");
+    const alcoholUnitsEl = document.getElementById("alcoholUnits");
+    const progressText = document.getElementById("progressText");
+    const progressFill = document.getElementById("progressFill");
+    const warningEl = document.getElementById("warning");
+    const warningText = document.getElementById("warningText");
+    const dailyPureAlcoholEl = document.getElementById("dailyPureAlcohol");
+    const dailyUnitsEl = document.getElementById("dailyUnits");
+    const dailyProgressText = document.getElementById("dailyProgressText");
+    const dailyProgressFill = document.getElementById("dailyProgressFill");
+    const dailyWarningEl = document.getElementById("dailyWarning");
+    const dailyWarningText = document.getElementById("dailyWarningText");
+    const historyList = document.getElementById("historyList");
+
+    let lastKnownToday = getTodayDate();
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initializeStorage();
+      syncDateInputWithToday(true);
+      renderBrandOptions();
+      loadAndRender();
+      window.setInterval(handleDateRollover, 60 * 1000);
+    });
+
+    function initializeStorage() {
+      if (!localStorage.getItem(STORAGE_KEY_BRANDS)) {
+        localStorage.setItem(STORAGE_KEY_BRANDS, JSON.stringify(SEEDED_BRANDS));
+      }
+      if (!localStorage.getItem(STORAGE_KEY_DRINKS)) {
+        localStorage.setItem(STORAGE_KEY_DRINKS, JSON.stringify(SEEDED_RECORDS));
+      }
+    }
+
+    function getTodayDate() {
+      return formatLocalDate(new Date());
+    }
+
+    function formatLocalDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function parseLocalDate(dateString) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return null;
+      const [year, month, day] = dateString.split("-").map(Number);
+      const date = new Date(year, month - 1, day);
+      if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+        return null;
+      }
+      return date;
+    }
+
+    function syncDateInputWithToday(force = false) {
+      const today = getTodayDate();
+      if (force || !dateInput.value || dateInput.value === lastKnownToday) {
+        dateInput.value = today;
+      }
+      lastKnownToday = today;
+    }
+
+    function handleDateRollover() {
+      const today = getTodayDate();
+      if (today === lastKnownToday) return;
+      syncDateInputWithToday();
+      loadAndRender();
+    }
+
+    function isValidRecord(record) {
+      return (
+        Number.isFinite(Number(record?.alcohol)) &&
+        Number(record.alcohol) >= 0 &&
+        Number(record.alcohol) <= 100 &&
+        Number.isFinite(Number(record?.volume)) &&
+        Number(record.volume) > 0 &&
+        (record?.unit === "ml" || record?.unit === "oz") &&
+        Boolean(parseLocalDate(record?.date))
+      );
+    }
+
+    function readBrands() {
+      const brands = JSON.parse(localStorage.getItem(STORAGE_KEY_BRANDS) || "[]");
+      return Array.from(new Set(brands.map(brand => String(brand).trim()).filter(Boolean)));
+    }
+
+    function writeBrands(brands) {
+      localStorage.setItem(STORAGE_KEY_BRANDS, JSON.stringify(Array.from(new Set(brands))));
+    }
+
+    function readRecords() {
+      const records = JSON.parse(localStorage.getItem(STORAGE_KEY_DRINKS) || "[]");
+      return records.filter(isValidRecord);
+    }
+
+    function writeRecords(records) {
+      localStorage.setItem(STORAGE_KEY_DRINKS, JSON.stringify(records.filter(isValidRecord)));
+    }
+
+    function renderBrandOptions() {
+      brandList.innerHTML = "";
+      readBrands().forEach(brand => {
+        const option = document.createElement("option");
+        option.value = brand;
+        brandList.appendChild(option);
+      });
+    }
+
+    function loadAndRender() {
+      const records = readRecords();
+      renderStats(records);
+      renderHistory(records);
+    }
+
+    function getWeekRange() {
+      const now = new Date();
+      const end = new Date(now);
+      end.setHours(23, 59, 59, 999);
+      const start = new Date(now);
+      start.setDate(now.getDate() - 6);
+      start.setHours(0, 0, 0, 0);
+      return { start, end };
+    }
+
+    function calcPureAlcohol(volume, unit, alcohol) {
+      const volumeInMl = unit === "oz" ? volume * ML_PER_OZ : volume;
+      return volumeInMl * (alcohol / 100);
+    }
+
+    function updateStatCard(records, config) {
+      let totalPureAlcohol = 0;
+      records.forEach(record => {
+        totalPureAlcohol += calcPureAlcohol(Number(record.volume), record.unit, Number(record.alcohol));
+      });
+
+      const units = totalPureAlcohol / 10;
+      config.pureAlcoholEl.textContent = Math.round(totalPureAlcohol);
+      config.unitsEl.textContent = units.toFixed(1);
+      config.progressFill.style.width = `${Math.min((units / config.limit) * 100, 100)}%`;
+      config.progressText.textContent = `${units.toFixed(1)} / ${config.limit} 单位`;
+
+      config.progressFill.classList.remove("warning", "danger");
+      config.warningEl.classList.remove("normal", "caution", "danger");
+      config.warningEl.style.display = "none";
+
+      if (units > config.limit) {
+        config.progressFill.classList.add("danger");
+        config.warningEl.classList.add("danger");
+        config.warningEl.style.display = "flex";
+        config.warningText.textContent = config.dangerMsg;
+      } else if (units >= config.cautionThreshold) {
+        config.progressFill.classList.add("warning");
+        config.warningEl.classList.add("caution");
+        config.warningEl.style.display = "flex";
+        config.warningText.textContent = config.cautionMsg;
+      } else {
+        config.warningEl.classList.add("normal");
+      }
+    }
+
+    function renderStats(records) {
+      const today = getTodayDate();
+      const weekRange = getWeekRange();
+      const weekRecords = records.filter(record => {
+        const recordDate = parseLocalDate(record.date);
+        if (!recordDate) return false;
+        recordDate.setHours(12, 0, 0, 0);
+        return recordDate >= weekRange.start && recordDate <= weekRange.end;
+      });
+
+      const todayRecords = records.filter(record => record.date === today);
+
+      updateStatCard(weekRecords, {
+        pureAlcoholEl,
+        unitsEl: alcoholUnitsEl,
+        progressFill,
+        progressText,
+        warningEl,
+        warningText,
+        limit: WEEKLY_LIMIT,
+        cautionThreshold: 10,
+        dangerMsg: "已超过每周 14 单位限值，请注意健康饮酒。",
+        cautionMsg: "已接近每周 14 单位限值，请注意控制饮酒量。"
+      });
+
+      updateStatCard(todayRecords, {
+        pureAlcoholEl: dailyPureAlcoholEl,
+        unitsEl: dailyUnitsEl,
+        progressFill: dailyProgressFill,
+        progressText: dailyProgressText,
+        warningEl: dailyWarningEl,
+        warningText: dailyWarningText,
+        limit: DAILY_LIMIT,
+        cautionThreshold: 3.5,
+        dangerMsg: "已超过今日 4.5 单位限值。",
+        cautionMsg: "已接近今日 4.5 单位限值，请注意控制。"
+      });
+    }
+
+    function renderHistory(records) {
+      if (!records.length) {
+        historyList.innerHTML = '<p class="empty-message">暂无记录</p>';
+        return;
+      }
+
+      historyList.innerHTML = "";
+      [...records]
+        .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
+        .forEach(record => {
+          const units = calcPureAlcohol(Number(record.volume), record.unit, Number(record.alcohol)) / 10;
+          const item = document.createElement("div");
+          item.className = "history-item";
+
+          const info = document.createElement("div");
+          info.className = "history-info";
+
+          const brand = document.createElement("div");
+          brand.className = "history-brand";
+          brand.textContent = record.brand || "未知品牌";
+
+          const details = document.createElement("div");
+          details.className = "history-details";
+          details.textContent = `酒精度: ${record.alcohol}% | ${record.volume}${record.unit} | ${units.toFixed(1)} 单位`;
+
+          const date = document.createElement("div");
+          date.className = "history-date";
+          date.textContent = record.date;
+
+          const actions = document.createElement("div");
+          actions.className = "history-actions";
+
+          const repeatButton = document.createElement("button");
+          repeatButton.className = "btn-repeat";
+          repeatButton.dataset.action = "repeat";
+          repeatButton.dataset.id = record.id;
+          repeatButton.textContent = "又喝了一份";
+
+          const button = document.createElement("button");
+          button.className = "btn-delete";
+          button.dataset.action = "delete";
+          button.dataset.id = record.id;
+          button.textContent = "删除";
+
+          actions.append(repeatButton, button);
+          info.append(brand, details, date);
+          item.append(info, actions);
+          historyList.appendChild(item);
+        });
+    }
+
+    function fillFormFromRecord(record) {
+      brandInput.value = record.brand || "";
+      alcoholInput.value = record.alcohol;
+      volumeInput.value = record.volume;
+      volumeUnit.value = record.unit;
+      dateInput.focus();
+      dateInput.showPicker?.();
+      form.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    historyList.addEventListener("click", event => {
+      const button = event.target.closest("button[data-id]");
+      if (!button) return;
+      const records = readRecords();
+      const record = records.find(item => item.id === button.dataset.id);
+      if (!record) return;
+
+      if (button.dataset.action === "repeat") {
+        fillFormFromRecord(record);
+        return;
+      }
+
+      if (button.dataset.action === "delete") {
+        writeRecords(records.filter(item => item.id !== button.dataset.id));
+        loadAndRender();
+      }
+    });
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      syncDateInputWithToday();
+
+      const brand = brandInput.value.trim();
+      const alcohol = parseFloat(alcoholInput.value);
+      const volume = parseFloat(volumeInput.value);
+      const unit = volumeUnit.value;
+      const date = dateInput.value;
+
+      if (
+        !Number.isFinite(alcohol) ||
+        alcohol < 0 ||
+        alcohol > 100 ||
+        !Number.isFinite(volume) ||
+        volume <= 0 ||
+        (unit !== "ml" && unit !== "oz") ||
+        !parseLocalDate(date)
+      ) {
+        alert("请填写合法的酒精度、饮酒量和日期");
+        return;
+      }
+
+      const records = readRecords();
+      records.push({
+        id: crypto.randomUUID(),
+        brand,
+        alcohol,
+        volume,
+        unit,
+        date,
+        timestamp: Date.now()
+      });
+      writeRecords(records);
+
+      if (brand) {
+        const brands = readBrands();
+        if (!brands.includes(brand)) {
+          brands.push(brand);
+          writeBrands(brands);
+          renderBrandOptions();
+        }
+      }
+
+      loadAndRender();
+      form.reset();
+      syncDateInputWithToday(true);
+    });
+  </script>
+</body>
+</html>
