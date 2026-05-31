@@ -45,7 +45,7 @@
         linear-gradient(135deg, rgba(255, 244, 207, 0.72) 0 12%, transparent 12% 24%, rgba(255, 244, 207, 0.42) 24% 36%, transparent 36% 48%),
         linear-gradient(180deg, #341712 0%, #532018 42%, #26120f 100%);
       background-size: auto, auto, 42px 42px, auto;
-      padding: 26px 18px 42px;
+      padding: 22px 18px 38px;
     }
 
     body::before {
@@ -81,8 +81,9 @@
 
     .showa-hero {
       position: relative;
-      margin-bottom: 18px;
-      padding: 20px;
+      max-width: 520px;
+      margin-bottom: 16px;
+      padding: 14px 16px;
       color: var(--paper-strong);
       background:
         linear-gradient(90deg, rgba(214, 167, 65, 0.18), transparent 12%, transparent 88%, rgba(214, 167, 65, 0.18)),
@@ -115,13 +116,13 @@
       position: relative;
       z-index: 1;
       display: grid;
-      grid-template-columns: auto minmax(0, 1fr) auto;
-      gap: 18px;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 16px;
       align-items: center;
     }
 
     .hero-seal {
-      width: 82px;
+      width: 68px;
       aspect-ratio: 1;
       border: 2px solid var(--gold);
       border-radius: 50%;
@@ -132,7 +133,7 @@
         radial-gradient(circle, rgba(111, 29, 22, 0.96) 0 52%, rgba(36, 17, 13, 0.96) 53% 100%);
       box-shadow: inset 0 0 0 6px rgba(214, 167, 65, 0.12);
       font-family: "Iowan Old Style", "Songti SC", serif;
-      font-size: 2.1rem;
+      font-size: 1.8rem;
       font-weight: 800;
     }
 
@@ -141,44 +142,10 @@
     }
 
     .hero-copy h1 {
-      margin-top: 6px;
-      font-size: 2.7rem;
+      font-size: 2.35rem;
       line-height: 1.05;
       color: var(--paper-strong);
       text-shadow: 0 3px 0 rgba(0, 0, 0, 0.32), 0 0 18px rgba(214, 167, 65, 0.24);
-    }
-
-    .hero-copy p {
-      max-width: 680px;
-      margin-top: 10px;
-      color: #ecd59a;
-      line-height: 1.7;
-      font-size: 0.96rem;
-    }
-
-    .hero-badge {
-      min-width: 154px;
-      padding: 12px 14px;
-      border: 1px solid rgba(214, 167, 65, 0.66);
-      background: rgba(247, 232, 191, 0.08);
-      color: var(--paper-strong);
-      text-align: center;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .hero-badge span {
-      display: block;
-      color: var(--gold);
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-    }
-
-    .hero-badge strong {
-      display: block;
-      margin-top: 6px;
-      font-family: "Iowan Old Style", "Songti SC", serif;
-      font-size: 1.25rem;
     }
 
     .summary-card,
@@ -217,15 +184,6 @@
       pointer-events: none;
     }
 
-    .eyebrow,
-    .section-kicker {
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      font-size: 0.72rem;
-      color: var(--vermilion);
-      font-weight: 800;
-    }
-
     h1,
     h2,
     h3 {
@@ -257,7 +215,6 @@
       border-color: rgba(214, 167, 65, 0.76);
     }
 
-    .summary-card:first-child .section-kicker,
     .summary-card:first-child .stat-label,
     .summary-card:first-child .progress-header span:first-child,
     .summary-card:first-child .progress-labels {
@@ -270,27 +227,27 @@
     }
 
     .summary-card {
-      padding: 18px;
+      padding: 16px;
     }
 
     .section-head {
       position: relative;
       z-index: 1;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .section-head h2,
     .section-head h3 {
-      margin-top: 5px;
+      margin-top: 0;
     }
 
     .section-head h2 {
-      font-size: 1.45rem;
+      font-size: 1.34rem;
       line-height: 1.15;
     }
 
     .section-head h3 {
-      font-size: 1.25rem;
+      font-size: 1.18rem;
     }
 
     .stats-grid {
@@ -423,7 +380,7 @@
     }
 
     .form-card {
-      padding: 24px;
+      padding: 20px;
       position: sticky;
       top: 18px;
       background:
@@ -432,31 +389,18 @@
         var(--paper-strong);
     }
 
-    .quick-tip {
-      position: relative;
-      z-index: 1;
-      margin-top: -4px;
-      margin-bottom: 16px;
-      color: var(--muted);
-      line-height: 1.7;
-      font-size: 0.92rem;
-      padding: 12px 14px;
-      border-left: 4px solid var(--gold);
-      background: rgba(255, 244, 207, 0.52);
-    }
-
     #drinkForm {
       position: relative;
       z-index: 1;
       display: grid;
-      gap: 14px;
+      gap: 12px;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 7px;
       color: var(--muted);
-      font-size: 0.78rem;
+      font-size: 0.74rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
     }
@@ -464,7 +408,7 @@
     .form-group input,
     .form-group select {
       width: 100%;
-      height: 50px;
+      height: 46px;
       padding: 0 14px;
       border-radius: var(--radius-md);
       border: 1px solid rgba(70, 35, 18, 0.26);
@@ -494,7 +438,7 @@
 
     .btn-submit {
       margin-top: 4px;
-      height: 54px;
+      height: 50px;
       border: none;
       border-radius: var(--radius-md);
       background:
@@ -517,7 +461,7 @@
     }
 
     .history-card {
-      padding: 24px;
+      padding: 20px;
     }
 
     .history-headline {
@@ -527,14 +471,7 @@
       justify-content: space-between;
       align-items: end;
       gap: 18px;
-      margin-bottom: 16px;
-    }
-
-    .history-summary {
-      color: var(--muted);
-      font-size: 0.92rem;
-      line-height: 1.7;
-      max-width: 560px;
+      margin-bottom: 12px;
     }
 
     .history-list {
@@ -543,7 +480,7 @@
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
-      max-height: 420px;
+      max-height: 380px;
       overflow-y: auto;
       padding-right: 4px;
     }
@@ -553,7 +490,7 @@
       justify-content: space-between;
       align-items: center;
       gap: 14px;
-      padding: 16px 18px;
+      padding: 14px 16px;
       border-radius: var(--radius-lg);
       border: 1px solid rgba(70, 35, 18, 0.18);
       background:
@@ -633,22 +570,13 @@
     .empty-message {
       display: grid;
       place-items: center;
-      min-height: 180px;
+      min-height: 120px;
       border: 1px dashed rgba(83, 58, 31, 0.14);
       border-radius: var(--radius-lg);
       color: var(--soft);
       text-align: center;
       padding: 24px;
       grid-column: 1 / -1;
-    }
-
-    .note-strip {
-      margin-top: 18px;
-      color: var(--muted);
-      font-size: 0.88rem;
-      line-height: 1.7;
-      position: relative;
-      z-index: 1;
     }
 
     code {
@@ -682,28 +610,25 @@
       .summary-card,
       .form-card,
       .history-card {
-        padding: 20px;
+        padding: 16px;
         border-radius: var(--radius-xl);
       }
 
       .showa-hero {
-        padding: 18px;
+        max-width: none;
+        padding: 16px;
       }
 
       .hero-inner {
-        grid-template-columns: 1fr;
+        grid-template-columns: auto minmax(0, 1fr);
       }
 
       .hero-seal {
-        width: 64px;
+        width: 56px;
       }
 
       .hero-copy h1 {
-        font-size: 2.1rem;
-      }
-
-      .hero-badge {
-        width: 100%;
+        font-size: 1.85rem;
       }
 
       .summary-grid {
@@ -751,13 +676,7 @@
       <div class="hero-inner">
         <div class="hero-seal">酒</div>
         <div class="hero-copy">
-          <p class="section-kicker">Showa Night Ledger</p>
           <h1>饮酒监控器</h1>
-          <p>用昭和酒馆菜单的方式记录每一杯，今日、近三日和本周单位数一眼看清。</p>
-        </div>
-        <div class="hero-badge">
-          <span>Reference</span>
-          <strong>3日 / 7日</strong>
         </div>
       </div>
     </header>
@@ -766,7 +685,6 @@
       <div class="summary-grid">
         <section class="summary-card">
           <div class="section-head">
-            <p class="section-kicker">Weekly Focus</p>
             <h2>本周统计</h2>
           </div>
           <div class="stats-grid">
@@ -800,7 +718,6 @@
 
         <section class="summary-card">
           <div class="section-head">
-            <p class="section-kicker">Daily Check</p>
             <h2>今日统计</h2>
           </div>
           <div class="stats-grid">
@@ -834,7 +751,6 @@
 
         <section class="summary-card">
           <div class="section-head">
-            <p class="section-kicker">Three-Day View</p>
             <h2>近三日统计</h2>
           </div>
           <div class="stats-grid">
@@ -869,10 +785,8 @@
 
       <aside class="form-card">
         <div class="section-head">
-          <p class="section-kicker">Quick Entry</p>
-          <h2>快速添加记录</h2>
+          <h2>快速添加</h2>
         </div>
-        <p class="quick-tip">把录入区固定到电脑端右侧，打开页面就能直接记。你主要会看的“周/日进度”和“新记录输入”都在首屏。</p>
         <form id="drinkForm">
           <div class="form-group">
             <label for="brandSelect">品牌</label>
@@ -905,15 +819,12 @@
     <section class="history-card">
       <div class="history-headline">
         <div class="section-head">
-          <p class="section-kicker">Archive</p>
           <h2>历史记录</h2>
         </div>
-        <p class="history-summary">历史记录保留，但不再霸占页面主体。这里只做回看和删除，真正高频的监控与录入已经前置到上面。</p>
       </div>
       <div id="historyList" class="history-list">
         <p class="empty-message">暂无记录</p>
       </div>
-      <p class="note-strip">这个页面仍然是单文件版本，双击即可打开；数据保存在本浏览器本地存储里。</p>
     </section>
   </div>
 
