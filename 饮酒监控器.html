@@ -152,14 +152,15 @@
     .form-card,
     .history-card {
       background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.36), transparent 26%),
-        repeating-linear-gradient(0deg, rgba(70, 35, 18, 0.025) 0 2px, transparent 2px 7px),
-        var(--paper);
-      border: 1px solid rgba(214, 167, 65, 0.54);
+        linear-gradient(135deg, rgba(214, 167, 65, 0.18), transparent 36%),
+        repeating-linear-gradient(90deg, rgba(255, 244, 207, 0.035) 0 12px, transparent 12px 24px),
+        var(--lacquer);
+      border: 1px solid rgba(214, 167, 65, 0.76);
       border-radius: var(--radius-xl);
       box-shadow: var(--shadow);
       position: relative;
       overflow: hidden;
+      color: var(--paper-strong);
     }
 
     .summary-card::before,
@@ -180,7 +181,7 @@
       content: "";
       position: absolute;
       inset: 7px;
-      border: 1px solid rgba(70, 35, 18, 0.16);
+      border: 1px solid rgba(255, 244, 207, 0.16);
       pointer-events: none;
     }
 
@@ -207,22 +208,19 @@
 
     .summary-card:first-child {
       grid-column: 1 / -1;
-      background:
-        linear-gradient(135deg, rgba(214, 167, 65, 0.18), transparent 36%),
-        repeating-linear-gradient(90deg, rgba(255, 244, 207, 0.035) 0 12px, transparent 12px 24px),
-        var(--lacquer);
-      color: var(--paper-strong);
-      border-color: rgba(214, 167, 65, 0.76);
     }
 
-    .summary-card:first-child .stat-label,
-    .summary-card:first-child .progress-header span:first-child,
-    .summary-card:first-child .progress-labels {
+    .summary-card .stat-label,
+    .summary-card .progress-header span:first-child,
+    .summary-card .progress-labels,
+    .form-group label {
       color: var(--paper-dim);
     }
 
-    .summary-card:first-child .section-head h2,
-    .summary-card:first-child .stat-value {
+    .summary-card .section-head h2,
+    .summary-card .stat-value,
+    .form-card .section-head h2,
+    .history-card .section-head h2 {
       color: var(--gold);
     }
 
@@ -262,17 +260,11 @@
       min-height: 74px;
       padding: 11px 12px;
       border-radius: var(--radius-lg);
-      border: 1px solid rgba(70, 35, 18, 0.22);
-      background:
-        linear-gradient(180deg, rgba(255, 244, 207, 0.68), rgba(236, 213, 154, 0.18));
+      border: 1px solid rgba(214, 167, 65, 0.45);
+      background: rgba(247, 232, 191, 0.08);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-    }
-
-    .summary-card:first-child .stat-item {
-      border-color: rgba(214, 167, 65, 0.45);
-      background: rgba(247, 232, 191, 0.08);
     }
 
     .stat-value {
@@ -280,13 +272,13 @@
       font-size: 2rem;
       font-weight: 700;
       line-height: 1;
-      color: var(--vermilion);
+      color: var(--gold);
       font-variant-numeric: tabular-nums;
     }
 
     .stat-label {
       display: block;
-      color: var(--muted);
+      color: var(--paper-dim);
       font-size: 0.68rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -312,15 +304,15 @@
     }
 
     .progress-header span:first-child {
-      color: var(--muted);
+      color: var(--paper-dim);
     }
 
     .progress-bar {
       height: 8px;
       border-radius: 999px;
       overflow: hidden;
-      background: rgba(70, 35, 18, 0.16);
-      border: 1px solid rgba(70, 35, 18, 0.24);
+      background: rgba(247, 232, 191, 0.1);
+      border: 1px solid rgba(214, 167, 65, 0.24);
     }
 
     .progress-fill {
@@ -343,7 +335,7 @@
     .progress-labels {
       margin-top: 6px;
       font-size: 0.64rem;
-      color: var(--soft);
+      color: var(--paper-dim);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -362,31 +354,27 @@
     }
 
     .warning.normal {
-      background: rgba(31, 90, 75, 0.12);
-      border-color: rgba(31, 90, 75, 0.18);
-      color: var(--jade-deep);
+      background: rgba(31, 90, 75, 0.28);
+      border-color: rgba(236, 213, 154, 0.16);
+      color: var(--paper-strong);
     }
 
     .warning.caution {
-      background: rgba(209, 153, 68, 0.13);
-      border-color: rgba(209, 153, 68, 0.18);
-      color: #8f5f1d;
+      background: rgba(209, 153, 68, 0.18);
+      border-color: rgba(209, 153, 68, 0.28);
+      color: var(--paper-strong);
     }
 
     .warning.danger {
-      background: rgba(191, 90, 67, 0.12);
-      border-color: rgba(191, 90, 67, 0.18);
-      color: #953c29;
+      background: rgba(191, 90, 67, 0.2);
+      border-color: rgba(191, 90, 67, 0.32);
+      color: var(--paper-strong);
     }
 
     .form-card {
       padding: 20px;
       position: sticky;
       top: 18px;
-      background:
-        linear-gradient(180deg, rgba(31, 90, 75, 0.12), transparent 32%),
-        repeating-linear-gradient(0deg, rgba(70, 35, 18, 0.025) 0 2px, transparent 2px 7px),
-        var(--paper-strong);
     }
 
     #drinkForm {
@@ -399,7 +387,6 @@
     .form-group label {
       display: block;
       margin-bottom: 7px;
-      color: var(--muted);
       font-size: 0.74rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -411,8 +398,8 @@
       height: 46px;
       padding: 0 14px;
       border-radius: var(--radius-md);
-      border: 1px solid rgba(70, 35, 18, 0.26);
-      background: rgba(255, 244, 207, 0.64);
+      border: 1px solid rgba(214, 167, 65, 0.34);
+      background: rgba(255, 244, 207, 0.9);
       color: var(--ink);
       font-size: 1rem;
       transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
@@ -423,7 +410,7 @@
     .form-group select:focus {
       outline: none;
       border-color: rgba(159, 47, 30, 0.55);
-      box-shadow: 0 0 0 4px rgba(159, 47, 30, 0.12);
+      box-shadow: 0 0 0 4px rgba(214, 167, 65, 0.16);
     }
 
     .form-group input::placeholder {
@@ -479,7 +466,7 @@
       z-index: 1;
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
+      gap: 8px;
       max-height: 380px;
       overflow-y: auto;
       padding-right: 4px;
@@ -489,19 +476,20 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 14px;
-      padding: 14px 16px;
+      gap: 10px;
+      min-height: 52px;
+      padding: 8px 10px;
       border-radius: var(--radius-lg);
-      border: 1px solid rgba(70, 35, 18, 0.18);
+      border: 1px solid rgba(214, 167, 65, 0.26);
       background:
-        linear-gradient(90deg, rgba(159, 47, 30, 0.08), transparent 30%),
-        rgba(255, 244, 207, 0.52);
+        linear-gradient(90deg, rgba(214, 167, 65, 0.13), transparent 36%),
+        rgba(247, 232, 191, 0.07);
     }
 
     .history-info {
       min-width: 0;
       display: grid;
-      gap: 4px;
+      gap: 1px;
     }
 
     .history-actions {
@@ -512,31 +500,41 @@
     }
 
     .history-brand {
-      font-size: 1rem;
+      color: var(--paper-strong);
+      font-size: 0.88rem;
       font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .history-details {
-      color: var(--muted);
-      font-size: 0.84rem;
-      line-height: 1.5;
+      color: var(--paper-dim);
+      font-size: 0.72rem;
+      line-height: 1.32;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .history-date {
-      color: var(--vermilion);
-      font-size: 0.72rem;
+      color: var(--gold);
+      font-size: 0.62rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .btn-delete {
       min-width: 72px;
       height: 36px;
       padding: 0 14px;
-      border: 1px solid rgba(191, 90, 67, 0.18);
+      border: 1px solid rgba(191, 90, 67, 0.36);
       border-radius: var(--radius-md);
-      background: rgba(191, 90, 67, 0.08);
-      color: var(--danger);
+      background: rgba(191, 90, 67, 0.18);
+      color: var(--paper-strong);
       font-size: 0.78rem;
       font-weight: 600;
       cursor: pointer;
@@ -545,17 +543,17 @@
 
     .btn-delete:hover {
       transform: translateY(-1px);
-      background: rgba(191, 90, 67, 0.14);
+      background: rgba(191, 90, 67, 0.28);
     }
 
     .btn-repeat {
       min-width: 108px;
       height: 36px;
       padding: 0 14px;
-      border: 1px solid rgba(31, 90, 75, 0.2);
+      border: 1px solid rgba(214, 167, 65, 0.34);
       border-radius: var(--radius-md);
-      background: rgba(31, 90, 75, 0.09);
-      color: var(--jade);
+      background: rgba(31, 90, 75, 0.26);
+      color: var(--paper-strong);
       font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
@@ -564,16 +562,16 @@
 
     .btn-repeat:hover {
       transform: translateY(-1px);
-      background: rgba(31, 90, 75, 0.15);
+      background: rgba(31, 90, 75, 0.36);
     }
 
     .empty-message {
       display: grid;
       place-items: center;
       min-height: 120px;
-      border: 1px dashed rgba(83, 58, 31, 0.14);
+      border: 1px dashed rgba(214, 167, 65, 0.28);
       border-radius: var(--radius-lg);
-      color: var(--soft);
+      color: var(--paper-dim);
       text-align: center;
       padding: 24px;
       grid-column: 1 / -1;
@@ -656,16 +654,18 @@
         grid-template-columns: 1fr;
       }
 
-      .history-headline,
-      .history-item,
-      .history-actions {
+      .history-headline {
         flex-direction: column;
         align-items: start;
       }
 
-      .btn-delete,
-      .btn-repeat {
-        width: 100%;
+      .history-item {
+        gap: 8px;
+        padding: 8px 10px;
+      }
+
+      .history-actions {
+        gap: 6px;
       }
     }
   </style>
