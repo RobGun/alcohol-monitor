@@ -244,7 +244,7 @@
     .summary-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
+      gap: 14px;
     }
 
     .summary-card:first-child {
@@ -270,26 +270,27 @@
     }
 
     .summary-card {
-      padding: 24px;
+      padding: 18px;
     }
 
     .section-head {
       position: relative;
       z-index: 1;
-      margin-bottom: 18px;
+      margin-bottom: 12px;
     }
 
     .section-head h2,
     .section-head h3 {
-      margin-top: 8px;
+      margin-top: 5px;
     }
 
     .section-head h2 {
-      font-size: 1.85rem;
+      font-size: 1.45rem;
+      line-height: 1.15;
     }
 
     .section-head h3 {
-      font-size: 1.45rem;
+      font-size: 1.25rem;
     }
 
     .stats-grid {
@@ -297,12 +298,12 @@
       z-index: 1;
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
+      gap: 8px;
     }
 
     .stat-item {
-      min-height: 110px;
-      padding: 18px;
+      min-height: 74px;
+      padding: 11px 12px;
       border-radius: var(--radius-lg);
       border: 1px solid rgba(70, 35, 18, 0.22);
       background:
@@ -319,7 +320,7 @@
 
     .stat-value {
       display: block;
-      font-size: 2.6rem;
+      font-size: 2rem;
       font-weight: 700;
       line-height: 1;
       color: var(--vermilion);
@@ -329,15 +330,15 @@
     .stat-label {
       display: block;
       color: var(--muted);
-      font-size: 0.78rem;
+      font-size: 0.68rem;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
     }
 
     .progress-section {
       position: relative;
       z-index: 1;
-      margin-top: 18px;
+      margin-top: 12px;
     }
 
     .progress-header,
@@ -349,8 +350,8 @@
     }
 
     .progress-header {
-      margin-bottom: 10px;
-      font-size: 0.92rem;
+      margin-bottom: 7px;
+      font-size: 0.78rem;
     }
 
     .progress-header span:first-child {
@@ -358,7 +359,7 @@
     }
 
     .progress-bar {
-      height: 14px;
+      height: 8px;
       border-radius: 999px;
       overflow: hidden;
       background: rgba(70, 35, 18, 0.16);
@@ -383,24 +384,24 @@
     }
 
     .progress-labels {
-      margin-top: 9px;
-      font-size: 0.72rem;
+      margin-top: 6px;
+      font-size: 0.64rem;
       color: var(--soft);
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.05em;
     }
 
     .warning {
       position: relative;
       z-index: 1;
-      margin-top: 14px;
+      margin-top: 10px;
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 14px 16px;
+      gap: 8px;
+      padding: 9px 11px;
       border-radius: var(--radius-md);
       border: 1px solid transparent;
-      font-size: 0.88rem;
+      font-size: 0.78rem;
     }
 
     .warning.normal {
@@ -705,9 +706,25 @@
         width: 100%;
       }
 
-      .summary-grid,
-      .stats-grid {
+      .summary-grid {
         grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .stat-item {
+        min-height: 66px;
+        padding: 10px;
+      }
+
+      .stat-value {
+        font-size: 1.65rem;
+      }
+
+      .stat-label {
+        font-size: 0.62rem;
       }
 
       .volume-row {
