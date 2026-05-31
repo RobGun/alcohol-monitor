@@ -606,6 +606,40 @@
             <span id="dailyWarningText"></span>
           </div>
         </section>
+
+        <section class="summary-card">
+          <div class="section-head">
+            <p class="section-kicker">Three-Day View</p>
+            <h2>近三日统计</h2>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-value" id="threeDayPureAlcohol">0</span>
+              <span class="stat-label">纯酒精 (ml)</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="threeDayUnits">0</span>
+              <span class="stat-label">酒精单位</span>
+            </div>
+          </div>
+          <div class="progress-section">
+            <div class="progress-header">
+              <span>近三日进度</span>
+              <span id="threeDayProgressText">0 / 13.5 单位</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="threeDayProgressFill"></div>
+            </div>
+            <div class="progress-labels">
+              <span>0</span>
+              <span>13.5 单位</span>
+            </div>
+          </div>
+          <div class="warning" id="threeDayWarning" style="display:none;">
+            <span>⚠️</span>
+            <span id="threeDayWarningText"></span>
+          </div>
+        </section>
       </div>
 
       <aside class="form-card">
@@ -661,6 +695,7 @@
   <script>
     const WEEKLY_LIMIT = 14;
     const DAILY_LIMIT = 4.5;
+    const THREE_DAY_LIMIT = DAILY_LIMIT * 3;
     const ML_PER_OZ = 29.5735;
     const STORAGE_KEY_DRINKS = "alcohol_monitor_drinks_v2";
     const STORAGE_KEY_BRANDS = "alcohol_monitor_brands_v2";
@@ -690,6 +725,12 @@
     const dailyProgressFill = document.getElementById("dailyProgressFill");
     const dailyWarningEl = document.getElementById("dailyWarning");
     const dailyWarningText = document.getElementById("dailyWarningText");
+    const threeDayPureAlcoholEl = document.getElementById("threeDayPureAlcohol");
+    const threeDayUnitsEl = document.getElementById("threeDayUnits");
+    const threeDayProgressText = document.getElementById("threeDayProgressText");
+    const threeDayProgressFill = document.getElementById("threeDayProgressFill");
+    const threeDayWarningEl = document.getElementById("threeDayWarning");
+    const threeDayWarningText = document.getElementById("threeDayWarningText");
     const historyList = document.getElementById("historyList");
 
     let lastKnownToday = getTodayDate();
@@ -802,6 +843,23 @@
       return { start, end };
     }
 
+    function getRecentDayRange(dayCount) {
+      const now = new Date();
+      const end = new Date(now);
+      end.setHours(23, 59, 59, 999);
+      const start = new Date(now);
+      start.setDate(now.getDate() - (dayCount - 1));
+      start.setHours(0, 0, 0, 0);
+      return { start, end };
+    }
+
+    function isRecordInRange(record, range) {
+      const recordDate = parseLocalDate(record.date);
+      if (!recordDate) return false;
+      recordDate.setHours(12, 0, 0, 0);
+      return recordDate >= range.start && recordDate <= range.end;
+    }
+
     function calcPureAlcohol(volume, unit, alcohol) {
       const volumeInMl = unit === "oz" ? volume * ML_PER_OZ : volume;
       return volumeInMl * (alcohol / 100);
@@ -841,13 +899,9 @@
     function renderStats(records) {
       const today = getTodayDate();
       const weekRange = getWeekRange();
-      const weekRecords = records.filter(record => {
-        const recordDate = parseLocalDate(record.date);
-        if (!recordDate) return false;
-        recordDate.setHours(12, 0, 0, 0);
-        return recordDate >= weekRange.start && recordDate <= weekRange.end;
-      });
-
+      const threeDayRange = getRecentDayRange(3);
+      const weekRecords = records.filter(record => isRecordInRange(record, weekRange));
+      const threeDayRecords = records.filter(record => isRecordInRange(record, threeDayRange));
       const todayRecords = records.filter(record => record.date === today);
 
       updateStatCard(weekRecords, {
@@ -874,6 +928,19 @@
         cautionThreshold: 3.5,
         dangerMsg: "已超过今日 4.5 单位限值。",
         cautionMsg: "已接近今日 4.5 单位限值，请注意控制。"
+      });
+
+      updateStatCard(threeDayRecords, {
+        pureAlcoholEl: threeDayPureAlcoholEl,
+        unitsEl: threeDayUnitsEl,
+        progressFill: threeDayProgressFill,
+        progressText: threeDayProgressText,
+        warningEl: threeDayWarningEl,
+        warningText: threeDayWarningText,
+        limit: THREE_DAY_LIMIT,
+        cautionThreshold: 10.5,
+        dangerMsg: "近三日已超过 13.5 单位参考限值。",
+        cautionMsg: "近三日已接近 13.5 单位参考限值，请注意节奏。"
       });
     }
 
