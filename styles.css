@@ -859,3 +859,25 @@ footer {
     white-space: normal;
   }
 }
+
+.week-details {
+  margin-top: 16px;
+  font-size: 14px;
+  color: #dbe5f5;
+}
+.week-details summary {
+  cursor: pointer;
+  min-height: 44px;
+  align-content: center;
+}
+.week-details p {
+  padding: 8px 0;
+  border-top: 1px solid #3b4b64;
+  overflow-wrap: anywhere;
+}
+.history-item {
+  grid-template-columns: minmax(0, 1fr);
+}
+.history-actions {
+  justify-content: flex-end;
+}

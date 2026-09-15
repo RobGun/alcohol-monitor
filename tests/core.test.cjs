@@ -104,3 +104,14 @@ test("failed writes surface to callers and preserve existing data", () => {
   assert.throws(() => C.writeRecords(store, []), /QuotaExceededError/);
   assert.equal(store.getItem(C.DRINKS_KEY), before);
 });
+
+test("September 15 includes September 9 but excludes September 8", () => {
+  const records = ["2026-09-08", "2026-09-09", "2026-09-15"].map((date) => ({
+    ...base,
+    date,
+  }));
+  assert.deepEqual(
+    C.recent(records, 7, "2026-09-15").map((r) => r.date),
+    ["2026-09-09", "2026-09-15"],
+  );
+});

@@ -12,9 +12,9 @@
       content="快速记录饮酒量，查看今日、近三日与最近七天的酒精摄入。记录仅保存在当前浏览器。"
     />
     <title>饮酒监控器</title>
-    <link rel="stylesheet" href="./styles.css?v=20260907" />
-    <script src="./core.js?v=20260907" defer></script>
-    <script src="./app.js?v=20260907" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=20260915" />
+    <script src="./core.js?v=20260915" defer></script>
+    <script src="./app.js?v=20260915" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#drinkForm">跳到饮酒录入</a>
@@ -55,6 +55,10 @@
               ><span>14 单位为每周参考上限</span>
             </div>
             <p class="stat-warning" id="weekWarning" hidden></p>
+            <details class="week-details">
+              <summary id="weekDetailsLabel">查看计入的记录</summary>
+              <div id="weekDetailsList"></div>
+            </details>
           </section>
           <div class="small-stats">
             <section class="stat-card" aria-labelledby="todayTitle">
@@ -125,6 +129,9 @@
         <section class="form-card" aria-labelledby="formTitle">
           <div class="section-heading">
             <h2 id="formTitle">记一杯</h2>
+            <button type="button" class="btn-secondary" id="cancelEdit" hidden>
+              取消修改
+            </button>
             <span class="section-note">喝了多少，记多少</span>
           </div>
           <form id="drinkForm">
@@ -222,7 +229,7 @@
             </div>
             <div class="save-area">
               <div class="entry-preview">
-                <span>本次记录</span
+                <span id="selectedDate">记录日期</span
                 ><output id="entryUnits" for="volume volumeUnit alcohol"
                   >— <span>单位</span></output
                 >

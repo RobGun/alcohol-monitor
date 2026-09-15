@@ -40,6 +40,8 @@
   let visibleCount = 20;
   let today = C.localDate();
   let followToday = true;
+  let lastAutoDate = today;
+  let editingRecord = null;
   let undoAction = null;
   let toastTimer;
   let saveTimer;
@@ -68,9 +70,10 @@
   }
   function showError(error, reading = false) {
     const message = error?.message || "";
-    $("storageError").textContent = message.includes("原始数据")
-      ? message
-      : "浏览器未能读取或保存记录，可能是存储空间不足或存储权限受限。你的输入仍在，请解决后重试；不要清除已有记录。";
+    $("storageError").textContent =
+      message.includes("原始数据") || message.includes("其他页面变更")
+        ? message
+        : "浏览器未能读取或保存记录，可能是存储空间不足或存储权限受限。你的输入仍在，请解决后重试；不要清除已有记录。";
     $("storageError").hidden = false;
     if (reading) {
       readFailed = true;
@@ -107,6 +110,7 @@
     }
   }
   function reload() {
+    handleRollover();
     try {
       records = C.readRecords(localStorage);
       readFailed = false;
@@ -144,6 +148,23 @@
           ? `已超过 ${limit} 单位提醒值`
           : `已接近 ${limit} 单位提醒值`;
     }
+  }
+  function renderWeekDetails() {
+    const included = C.sorted(C.recent(records, 7, today));
+    $("weekDetailsLabel").textContent = `查看计入的 ${included.length} 条记录`;
+    const fragment = document.createDocumentFragment();
+    for (const record of included) {
+      fragment.append(
+        node(
+          "p",
+          "",
+          `${record.date} · ${record.brand || "未命名酒款"} · ${(C.pureAlcohol(record) / 10).toFixed(2)} 单位`,
+        ),
+      );
+    }
+    if (!included.length)
+      fragment.append(node("p", "", "这七天没有饮酒记录。"));
+    $("weekDetailsList").replaceChildren(fragment);
   }
   function renderBrands() {
     let stored = [];
@@ -195,8 +216,8 @@
     $("recentSection").hidden = seen.size === 0;
   }
   function dateLabel(value) {
-    if (value === today) return "今天";
-    if (value === C.offsetDate(today, -1)) return "昨天";
+    if (value === today) return `今天 · ${value}`;
+    if (value === C.offsetDate(today, -1)) return `昨天 · ${value}`;
     return value.replaceAll("-", ".");
   }
   function renderHistory() {
@@ -249,7 +270,15 @@
         "aria-label",
         `删除 ${record.date} 的 ${record.brand || "这杯酒"} 记录`,
       );
-      actions.append(repeat, remove);
+      const edit = node("button", "", "修改");
+      edit.type = "button";
+      edit.dataset.action = "edit";
+      edit.dataset.id = record.id;
+      edit.setAttribute(
+        "aria-label",
+        `修改 ${record.date} 的 ${record.brand || "这杯酒"} 记录`,
+      );
+      actions.append(edit, repeat, remove);
       item.append(info, actions);
       group.append(item);
     }
@@ -258,6 +287,7 @@
   }
   function render() {
     renderStats();
+    renderWeekDetails();
     renderBrands();
     renderRecent();
     renderHistory();
@@ -271,6 +301,9 @@
     $("weekRange").textContent =
       `${C.offsetDate(today, -6).slice(5).replace("-", ".")} — ${today.slice(5).replace("-", ".")}`;
     date.max = today;
+    $("selectedDate").textContent = date.value
+      ? `记录日期：${date.value}`
+      : "请选择记录日期";
     $("dateToday").setAttribute("aria-pressed", String(date.value === today));
     $("dateYesterday").setAttribute(
       "aria-pressed",
@@ -281,7 +314,14 @@
     const next = C.localDate();
     if (next === today) return;
     today = next;
-    if (followToday) date.value = today;
+    // Do not overwrite a changed native date value, even if the browser has
+    // restored the form or emitted change without input.
+    if (followToday && date.value === lastAutoDate && !editingRecord) {
+      date.value = today;
+      lastAutoDate = today;
+    } else {
+      followToday = false;
+    }
     updateDateUI();
     if (!readFailed) render();
   }
@@ -289,6 +329,7 @@
     handleRollover();
     date.value = value;
     followToday = follow;
+    if (follow) lastAutoDate = value;
     updateDateUI();
   }
   function volumeChoices() {
@@ -346,7 +387,9 @@
     alcohol.value = record.alcohol;
     volume.value = record.volume;
     unit.value = record.unit;
-    if (asToday) chooseDate(C.localDate(), true);
+    // A manual selection belongs to the draft, including when reusing a drink.
+    if (asToday && followToday && date.value === lastAutoDate && !editingRecord)
+      chooseDate(C.localDate(), true);
     updateEntry();
   }
   $("presets").addEventListener("click", (event) => {
@@ -361,11 +404,13 @@
   $("dateYesterday").addEventListener("click", () =>
     chooseDate(C.offsetDate(C.localDate(), -1)),
   );
-  date.addEventListener("input", () => {
+  function onDateSelection() {
     followToday = false;
     updateDateUI();
     $("formError").hidden = true;
-  });
+  }
+  date.addEventListener("input", onDateSelection);
+  date.addEventListener("change", onDateSelection);
   $("showMore").addEventListener("click", () => {
     visibleCount += 20;
     renderHistory();
@@ -381,6 +426,17 @@
     if (!button) return;
     const record = records.find((item) => item.id === button.dataset.id);
     if (!record) return;
+    if (button.dataset.action === "edit") {
+      editingRecord = { ...record };
+      fill(record);
+      chooseDate(record.date, false);
+      $("formTitle").textContent = "修改记录";
+      $("saveButton").textContent = "保存修改";
+      $("cancelEdit").hidden = false;
+      form.scrollIntoView({ block: "start" });
+      date.focus({ preventScroll: true });
+      return;
+    }
     if (button.dataset.action === "repeat") {
       fill(record, true);
       form.scrollIntoView({
@@ -391,7 +447,7 @@
       });
       $("formTitle").setAttribute("tabindex", "-1");
       $("formTitle").focus({ preventScroll: true });
-      announce("已填入，日期设为今天。确认后保存。");
+      announce(`已填入，记录日期为 ${date.value}。确认后保存。`);
     } else {
       if (commit((items) => items.filter((item) => item.id !== record.id))) {
         announce("已删除记录", (items) =>
@@ -426,17 +482,35 @@
     }
     record.alcohol = Number(record.alcohol);
     record.volume = Number(record.volume);
-    record.id = crypto.randomUUID();
-    record.timestamp = Date.now();
+    const previous = editingRecord;
+    record.id = previous ? previous.id : crypto.randomUUID();
+    record.timestamp = previous ? previous.timestamp : Date.now();
     busy = true;
     $("saveButton").disabled = true;
-    if (commit((items) => [...items, record])) {
+    if (
+      commit((items) => {
+        if (!previous) return [...items, record];
+        const current = items.find((item) => item.id === previous.id);
+        if (!current || JSON.stringify(current) !== JSON.stringify(previous)) {
+          throw new Error("这条记录已在其他页面变更，请刷新后重新修改。");
+        }
+        return items.map((item) =>
+          item.id === previous.id ? { ...item, ...record } : item,
+        );
+      })
+    ) {
       announce(
-        `已记录 ${record.volume} ${record.unit} · ${(C.pureAlcohol(record) / 10).toFixed(2)} 单位`,
-        (items) => items.filter((item) => item.id !== record.id),
+        `已保存 ${record.date} · ${record.volume} ${record.unit} · ${(C.pureAlcohol(record) / 10).toFixed(2)} 单位`,
+        (items) =>
+          previous
+            ? items.map((item) => (item.id === record.id ? previous : item))
+            : items.filter((item) => item.id !== record.id),
       );
-      // Keep the drink details for another pour; return backdated entries to today.
-      chooseDate(today, true);
+      // Leave the saved date visible, so the confirmation and form agree.
+      editingRecord = null;
+      $("formTitle").textContent = "记一杯";
+      $("cancelEdit").hidden = true;
+      chooseDate(record.date, record.date === today);
       if (document.activeElement instanceof HTMLElement)
         document.activeElement.blur();
       $("saveButton").textContent = "✓ 已保存";
@@ -451,6 +525,17 @@
       $("saveButton").disabled = readFailed;
     }
   });
+  $("cancelEdit").addEventListener("click", () => {
+    editingRecord = null;
+    form.reset();
+    $("formTitle").textContent = "记一杯";
+    $("cancelEdit").hidden = true;
+    $("saveButton").textContent = "＋ 保存记录";
+    chooseDate(C.localDate(), true);
+    updateEntry();
+  });
+  window.addEventListener("pageshow", reload);
+  window.addEventListener("focus", reload);
   window.addEventListener("storage", (event) => {
     if (
       event.key === C.DRINKS_KEY ||
