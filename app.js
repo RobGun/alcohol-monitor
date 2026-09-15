@@ -237,14 +237,19 @@
     for (const record of ordered.slice(0, visibleCount)) {
       if (record.date !== previousDate) {
         group = node("section", "history-group");
-        const heading = node("h3", "history-date-heading");
-        heading.append(node("span", "", dateLabel(record.date)));
-        group.append(heading);
+
         fragment.append(group);
         previousDate = record.date;
       }
       const item = node("div", "history-item");
       const info = node("div", "history-info");
+      const recordDate = node(
+        "time",
+        "record-date",
+        `饮酒日期：${dateLabel(record.date)}`,
+      );
+      recordDate.dateTime = record.date;
+      info.append(recordDate);
       info.append(node("div", "history-brand", record.brand || "未命名酒款"));
       info.append(
         node(
