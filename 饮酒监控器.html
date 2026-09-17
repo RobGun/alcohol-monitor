@@ -6,49 +6,44 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <meta name="theme-color" content="#291813" />
+    <meta name="theme-color" content="#090f1b" />
     <meta
       name="description"
       content="快速记录饮酒量，查看今日、近三日与最近七天的酒精摄入。记录仅保存在当前浏览器。"
     />
     <title>饮酒监控器</title>
-    <link rel="stylesheet" href="./styles.css?v=20260915-izakaya" />
-    <script src="./core.js?v=20260915-izakaya" defer></script>
-    <script src="./app.js?v=20260915-izakaya" defer></script>
+    <link rel="stylesheet" href="./styles.css?v=20260917-tech" />
+    <script src="./core.js?v=20260917-tech" defer></script>
+    <script src="./app.js?v=20260917-tech" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#drinkForm">跳到饮酒录入</a>
     <div class="container">
       <header class="app-header">
-        <div class="header-kicker">
-          <span lang="ja">日々の記録</span><span>私人的饮酒手帖</span
-          ><span lang="ja">酒と暮らし</span>
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"
+            ><svg
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            >
+              <path d="M5 17v-5m7 5V5m7 12V9" /></svg
+          ></span>
+          <h1>饮酒监控器</h1>
         </div>
-        <div class="header-main">
-          <div class="brand">
-            <span class="brand-mark" aria-hidden="true">酒</span>
-            <div>
-              <p class="brand-overline" lang="ja">居酒屋 · お酒の手帖</p>
-              <h1>饮酒监控器</h1>
-            </div>
-          </div>
-          <div class="header-tools">
-            <span id="headerDate" class="header-date"></span
-            ><a class="quick-entry" href="#formTitle">＋ 记一杯</a>
-          </div>
-        </div>
-        <div class="header-bottom">
-          <span>一杯一记 · 心中有数</span><span>饮酒量 / 酒精度 / 日期</span>
-        </div>
+        <span id="headerDate" class="header-date"></span>
+        <a class="quick-entry" href="#formTitle">＋ 记一杯</a>
       </header>
       <div id="storageError" class="error-banner" role="alert" hidden></div>
       <main class="workspace">
         <section class="overview" aria-label="饮酒概览">
           <section class="week-card" aria-labelledby="weekTitle">
             <div class="card-heading">
-              <h2 id="weekTitle">
-                <small class="section-kicker">七日酒帳</small>最近七天
-              </h2>
+              <h2 id="weekTitle">最近七天</h2>
               <span id="weekRange" class="date-range"></span>
             </div>
             <div class="week-total">
@@ -144,30 +139,24 @@
         </section>
         <section class="form-card" aria-labelledby="formTitle">
           <div class="section-heading">
-            <div>
-              <span class="section-kicker" lang="ja">お品書き / 饮酒登记</span>
-              <h2 id="formTitle">记一杯</h2>
-            </div>
+            <h2 id="formTitle">记一杯</h2>
             <button type="button" class="btn-secondary" id="cancelEdit" hidden>
               取消修改
             </button>
-            <span class="section-note">喝了多少，记多少</span>
+            <span class="section-note">快速录入</span>
           </div>
           <form id="drinkForm">
             <fieldset class="preset-field">
               <legend>快速选择</legend>
               <div class="preset-grid" id="presets">
                 <button type="button" class="preset" data-preset="beer">
-                  <span class="menu-index" aria-hidden="true">壹 · BEER</span
-                  ><strong>啤酒</strong><span>330 ml · 5%</span>
+                  <strong>啤酒</strong><span>330 ml · 5%</span>
                 </button>
                 <button type="button" class="preset" data-preset="wine">
-                  <span class="menu-index" aria-hidden="true">贰 · WINE</span
-                  ><strong>葡萄酒</strong><span>150 ml · 13%</span>
+                  <strong>葡萄酒</strong><span>150 ml · 13%</span>
                 </button>
                 <button type="button" class="preset" data-preset="spirit">
-                  <span class="menu-index" aria-hidden="true">叁 · SPIRITS</span
-                  ><strong>烈酒</strong><span>30 ml · 40%</span>
+                  <strong>烈酒</strong><span>30 ml · 40%</span>
                 </button>
               </div>
               <p class="field-hint">快捷值可修改，酒精度以瓶身标注为准。</p>
@@ -265,10 +254,7 @@
         </section>
         <section class="history-card" aria-labelledby="historyTitle">
           <div class="section-heading">
-            <div>
-              <span class="section-kicker" lang="ja">記録帖 / 每杯留记</span>
-              <h2 id="historyTitle">饮酒记录</h2>
-            </div>
+            <h2 id="historyTitle">饮酒记录</h2>
             <span id="historyCount" class="section-note">0 条记录</span>
           </div>
           <div id="historyList"></div>
@@ -282,11 +268,7 @@
           </button>
         </section>
       </main>
-      <footer>
-        <span class="footer-seal" aria-hidden="true">記</span>
-        <p>一杯一记 · 饮酒手帖</p>
-        <p>记录仅保存在当前浏览器，不会自动同步到其他设备。</p>
-      </footer>
+      <footer>记录仅保存在当前浏览器，不会自动同步到其他设备。</footer>
     </div>
     <div class="toast" id="toast" role="status" hidden>
       <span id="toastText"></span
